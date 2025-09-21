@@ -1,0 +1,201 @@
+/* AG Grid styles */
+@import "ag-grid-community/styles/ag-grid.css";
+@import "ag-grid-community/styles/ag-theme-alpine.css";
+
+/* Light mode text for AG Grid */
+.ag-theme-alpine,
+.ag-theme-alpine .ag-root,
+.ag-theme-alpine .ag-header,
+.ag-theme-alpine .ag-cell,
+.ag-theme-alpine .ag-header-cell,
+.ag-theme-alpine .ag-floating-filter-input,
+.ag-theme-alpine .ag-input-field-input {
+  color: #000 !important;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light;
+  color: #111827; /* gray-900 */
+  background-color: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: block;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+/* AG Grid Alpine theme */
+.ag-theme-alpine {
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  --ag-grid-size: 6px; /* compact spacing */
+  --ag-header-height: 42px;
+  --ag-row-height: 38px;
+  --ag-font-size: 13px;
+}
+
+/* Dark mode tweaks */
+.dark .ag-theme-alpine {
+  --ag-foreground-color: #e5e7eb; /* gray-200 */
+  --ag-background-color: #0b0b0b; /* near black */
+  --ag-header-foreground-color: #f3f4f6; /* gray-100 */
+  --ag-header-background-color: #111827; /* gray-900 */
+  --ag-borders: #1f2937; /* gray-800 */
+}
+
+.ag-theme-alpine .ag-header-cell-label {
+  font-weight: 600;
+  color: #334155; /* slate-700 */
+}
+
+.ag-theme-alpine .ag-row-hover {
+  background-color: #f8fafc; /* slate-50 */
+}
+
+.ag-theme-alpine .ag-row-selected {
+  background-color: #dbeafe !important; /* blue-100 */
+}
+
+.ag-theme-alpine .ag-root-wrapper {
+  border: none;
+}
+
+/* Right-align actions in pinned column */
+.ag-theme-alpine .ag-pinned-right-cols-container .ag-cell.ag-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.ag-theme-alpine .ag-paging-panel {
+  border-top: 1px solid #e5e7eb; /* gray-200 */
+  padding: 8px 12px;
+}
+
+/* Grid container */
+.grid-container {
+  height: 600px;
+  width: 100%;
+}
+
+/* Glass / blur utilities */
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(180%) blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+}
+
+.glass-header {
+  background-color: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.glass-modal {
+  background-color: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  backdrop-filter: saturate(180%) blur(14px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 40px rgba(2, 6, 23, 0.12);
+}
+
+/* Form controls inside glass modal */
+.glass-modal input,
+.glass-modal select,
+.glass-modal textarea {
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #e5e7eb; /* gray-200 */
+}
+
+.glass-modal ::placeholder {
+  color: #6b7280; /* gray-500 */
+  opacity: 1;
+}
+
+/* Glass buttons for actions */
+.btn-glass {
+  background-color: rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  border: 1px solid rgba(226, 232, 240, 0.9); /* slate-200 */
+  color: #0ea5e9; /* sky-500 for edit */
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 6px 12px rgba(2, 6, 23, 0.06);
+  transition: background-color 120ms ease, box-shadow 120ms ease,
+    transform 120ms ease;
+}
+.btn-glass:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 16px rgba(2, 6, 23, 0.08);
+}
+.btn-glass:active {
+  transform: translateY(0.5px);
+}
+
+.btn-glass-danger {
+  color: #ef4444; /* red-500 */
+  border-color: rgba(254, 226, 226, 0.95); /* red-100 */
+}
+
+/* Protect glass buttons inside AG Grid */
+.ag-theme-alpine .ag-cell .btn-glass,
+.ag-theme-alpine .ag-cell .btn-glass-danger {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Remove opinionated global button styling; components define their own */
+button {
+  font-family: inherit;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

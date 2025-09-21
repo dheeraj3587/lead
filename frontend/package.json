@@ -1,0 +1,61 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Lead Management System Frontend (React + Vite)",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/erino-lead-management.git"
+  },
+  "license": "ISC",
+  "author": "Erino Team <dev@erino.local>",
+  "homepage": "https://your-org.github.io/erino-lead-management/",
+  "packageManager": "npm@10.8.2",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint \"src/**/*.{js,jsx}\"",
+    "preview": "vite preview",
+    "spa:fallback": "node ./scripts/spa-fallback.mjs",
+    "deploy": "node ./scripts/deploy-frontend.mjs",
+    "deploy:vercel": "node ./scripts/deploy-frontend.mjs vercel",
+    "deploy:netlify": "node ./scripts/deploy-frontend.mjs netlify",
+    "deploy:surge": "node ./scripts/deploy-frontend.mjs surge",
+    "deploy:gh-pages": "npm run build && gh-pages -d dist",
+    "deploy:static": "node ./scripts/deploy-frontend.mjs static",
+    "ci:install": "npm ci",
+    "ci:verify-lock": "node ./scripts/verify-lockfile.mjs",
+    "analyze": "vite build --mode analyze"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "ag-grid-community": "^34.2.0",
+    "ag-grid-react": "^34.2.0",
+    "axios": "^1.12.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.1",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@vitejs/plugin-react": "^5.0.2",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.35.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "gh-pages": "^6.1.1",
+    "globals": "^16.4.0",
+    "postcss": "^8.4.49",
+    "rollup-plugin-visualizer": "^5.12.0",
+    "tailwindcss": "^3.4.14",
+    "vite": "^7.1.6"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
