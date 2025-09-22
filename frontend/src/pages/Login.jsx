@@ -7,7 +7,17 @@ import React, {
 } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
-import { LiquidButton, Button } from "@/components/ui/liquid-glass-button";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
+
+// It's often cleaner to define pure helper functions outside the component.
+const validateForm = (data) => {
+  const errors = {};
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+  if (!data.email || !emailRegex.test(data.email))
+    errors.email = "Enter a valid email address";
+  if (!data.password) errors.password = "Password is required";
+  return errors;
+};
 
 const Login = () => {
   const { login, error, clearError, isLoading } = useAuth();
@@ -16,78 +26,74 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [generalError, setGeneralError] = useState("");
   const isMountedRef = useRef(true);
 
   useEffect(() => {
+    // Clear any global errors from the context when the component mounts.
     clearError();
-  }, []);
 
-  useEffect(() => {
+    // Cleanup function to prevent state updates on unmounted component.
     return () => {
       isMountedRef.current = false;
     };
-  }, []);
+  }, [clearError]); // Added dependency per linter rules
 
-  const validate = useCallback((data) => {
-    const next = {};
-    // Simple but stricter email check; deeper validation is handled server-side
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-    if (!data.email || !emailRegex.test(data.email))
-      next.email = "Enter a valid email address";
-    if (!data.password) next.password = "Password is required";
-    return next;
-  }, []);
-
+  // The form is valid if the validation function returns no errors.
+  // This is a more direct and reliable calculation.
   const isFormValid = useMemo(() => {
-    return Object.keys(fieldErrors).length === 0 && form.email && form.password;
-  }, [fieldErrors, form]);
+    return Object.keys(validateForm(form)).length === 0;
+  }, [form]);
 
+  // onChange is now simpler: it just updates the form state.
   const onChange = useCallback(
     (e) => {
       const { name, value } = e.target;
-      setForm((prev) => {
-        const next = { ...prev, [name]: value };
-        setFieldErrors(validate(next));
-        return next;
-      });
+      setForm((prev) => ({ ...prev, [name]: value }));
+      // As a user types to fix an error, we can clear it.
+      if (fieldErrors[name]) {
+        setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+      }
     },
-    [validate],
+    [fieldErrors],
   );
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    // Clear all previous errors at the start of a submission.
     clearError();
-    setGeneralError("");
-    const clientErrors = validate(form);
-    setFieldErrors(clientErrors);
-    if (Object.keys(clientErrors).length > 0) return;
+    setFieldErrors({});
+
+    // Validate the form on submit.
+    const clientErrors = validateForm(form);
+    if (Object.keys(clientErrors).length > 0) {
+      setFieldErrors(clientErrors);
+      return;
+    }
 
     setSubmitting(true);
     try {
-      const res = await login({ email: form.email, password: form.password });
+      const res = await login(form);
       if (!isMountedRef.current) return;
+
       if (res.success) {
         navigate(location.state?.from?.pathname || "/", { replace: true });
       } else {
-        const nextFieldErrors = {};
+        // Let the AuthContext handle setting the general error.
+        // We only handle field-specific errors here.
         if (Array.isArray(res.errors)) {
+          const nextFieldErrors = {};
           res.errors.forEach((err) => {
             const field = err.field || err.param || err.path;
             const message = err.message || err.msg;
-            if (field && message) nextFieldErrors[field] = message;
+            if (field) nextFieldErrors[field] = message;
           });
+          setFieldErrors(nextFieldErrors);
         }
-        setFieldErrors(nextFieldErrors);
-        if (res.message && Object.keys(nextFieldErrors).length === 0)
-          setGeneralError(res.message);
       }
     } catch (err) {
       if (!isMountedRef.current) return;
       console.error("Login error:", err);
-      setGeneralError(
-        "Unable to sign in. Check your connection and try again.",
-      );
+      // The `login` function in the context should catch this and set the global error.
     } finally {
       if (isMountedRef.current) {
         setSubmitting(false);
@@ -95,7 +101,7 @@ const Login = () => {
     }
   };
 
-  if (isLoading && !error) return null;
+  if (isLoading) return null; // Simplified loading state check
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
@@ -103,9 +109,10 @@ const Login = () => {
         <h2 className="text-xl font-bold text-neutral-800">Sign in</h2>
         <p className="mt-1 text-sm text-neutral-600">Access your account</p>
 
-        {(error || generalError) && (
+        {/* Displaying only the error from the context */}
+        {error && (
           <div className="mt-4 mb-2 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-md">
-            {error || generalError}
+            {error}
           </div>
         )}
 
@@ -123,11 +130,10 @@ const Login = () => {
               type="email"
               value={form.email}
               onChange={onChange}
-              onInput={onChange}
               autoComplete="email"
               autoFocus
               className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black outline-none ring-0 transition focus:border-blue-500"
-              aria-invalid={Boolean(fieldErrors.email)}
+              aria-invalid={!!fieldErrors.email}
               aria-describedby={fieldErrors.email ? "email-error" : undefined}
             />
             {fieldErrors.email && (
@@ -150,10 +156,9 @@ const Login = () => {
               type="password"
               value={form.password}
               onChange={onChange}
-              onInput={onChange}
               autoComplete="current-password"
               className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black outline-none ring-0 transition focus:border-blue-500"
-              aria-invalid={Boolean(fieldErrors.password)}
+              aria-invalid={!!fieldErrors.password}
               aria-describedby={
                 fieldErrors.password ? "password-error" : undefined
               }
